@@ -1,0 +1,270 @@
+% Vojtěch Jindra
+% vjindr18@student.aau.dk
+
+% I decided to identify a passenger with an ID -- it doesnt really change the functionality of the program, yet it made the programming a bit easier since every function that requires a passenger can be written using only one argument.
+% Moreover, the rule identifyPassenger can be called as identifyPassenger(ID, _, _)? to obtain the first name and last name of given passsenger.
+% passenger(id, first_name, last_name, birth)
+passenger("VJ-010796", "Vojtech", "Jindra", "1.7.1996").
+passenger("GS-100396", "Gloria", "Solomon", "10.3.1996").
+passenger("DE-021279", "Denise", "Edwards", "2.12.1979").
+passenger("MM-061079", "Mariana", "Morris", "6.10.1996").
+passenger("IC-120587", "Ignacio", "Calahorri", "12.5.1987").
+
+% A passport is associated with a passenger ID and is issued by a country.
+% passport(country, passsenger_id)
+passport("Czech Republic", "VJ-010796").
+passport("Russia", "VJ-010796").
+passport("Spain", "IC-120587").
+passport("Denmark", "IC-120587").
+
+% country(name)
+country("Denmark").
+country("Czech Republic").
+country("Spain").
+country("Russia").
+country("France").
+
+% Visas between countries are assumed to be bidirectional in the program, although the facts do not necessarily specify that.
+% visa(country1, country2)
+visa("Denmark", "Czech Republic").
+visa("Spain", "Czech Republic").
+visa("Spain", "Denmark").
+
+% Blacklisting is unidirectional.
+% blacklist(blocking_country, blocked_country)
+blacklist("Russia", "Denmark").
+blacklist("Russia", "Spain").
+blacklist("Russia", "Czech Republic").
+
+% airport(IATA_code, city, country, weather)
+airport("CPH", "Copenhagen", "Denmark", "thunderstorm").
+airport("PRG", "Prague", "Czech Republic", "clear").
+airport("ORY", "Paris", "France", "windy").
+airport("CDG", "Paris", "France", "cloudy").
+airport("SVO", "Moscow", "Russia", "cloudy").
+airport("MAD", "Madrid", "Spain", "clear").
+
+% aircraft(reg_number, model, manufacturer, classification).
+aircraft("OY-JJO", "Airbus A380", "Airbus", "heavy").
+aircraft("YR-BMA", "Boeing 737-79P", "Boeing", "heavy").
+aircraft("OK-YAC", "Airbus A310", "Airbus", "light").
+
+% Helping fact for deciding whether a class of aircrafts can operate in given weather.
+% operates(aircraft_classification, weather)
+operates("heavy", "windy").
+operates("heavy", "cloudy").
+operates("heavy", "clear").
+operates("light", "cloudy").
+operates("light", "clear").
+
+% Seats also have an ID which binds them to the aircraft.
+% Rule identifySeat called as identifySeat(ID, _, _, _, _)? will give information about given seat.
+% seat(id, name, class, window/aisle/other, aircraft)
+seat("1A-OYJJO", "1A", "economy", "window", "OY-JJO").
+seat("1B-OYJJO", "1B", "economy", "other", "OY-JJO").
+seat("1C-OYJJO", "1C", "business", "aisle", "OY-JJO").
+seat("1D-OYJJO", "1D", "economy", "aisle", "OY-JJO").
+seat("1E-OYJJO", "1E", "economy", "other", "OY-JJO").
+seat("1F-OYJJO", "1F", "business", "window", "OY-JJO").
+
+seat("2A-YRBMA", "2A", "economy", "window", "YR-BMA").
+seat("2B-YRBMA", "2B", "economy", "other", "YR-BMA").
+seat("2C-YRBMA", "2C", "economy", "aisle", "YR-BMA").
+seat("2D-YRBMA", "2D", "economy", "aisle", "YR-BMA").
+seat("2E-YRBMA", "2E", "economy", "other", "YR-BMA").
+seat("2F-YRBMA", "2F", "economy", "window", "YR-BMA").
+
+seat("1A-OKYAC", "1A", "economy", "window", "OK-YAC").
+seat("1B-OKYAC", "1B", "economy", "other", "OK-YAC").
+seat("1C-OKYAC", "1C", "economy", "aisle", "OK-YAC").
+seat("1D-OKYAC", "1D", "economy", "aisle", "OK-YAC").
+seat("1E-OKYAC", "1E", "economy", "other", "OK-YAC").
+seat("1F-OKYAC", "1F", "economy", "window", "OK-YAC").
+
+% Adjacency of seats using their IDs.
+% adjacent(seat1, seat2)
+adjacent("1A-OYJJO", "1B-OYJJO").
+adjacent("1B-OYJJO", "1C-OYJJO").
+adjacent("1D-OYJJO", "1E-OYJJO").
+adjacent("1E-OYJJO", "1F-OYJJO").
+adjacent("1A-OYJJO", "1B-OYJJO").
+
+adjacent("2A-YRBMA", "2B-YRBMA").
+adjacent("2B-YRBMA", "2C-YRBMA").
+adjacent("2D-YRBMA", "2E-YRBMA").
+adjacent("2E-YRBMA", "2F-YRBMA").
+adjacent("2A-YRBMA", "2B-YRBMA").
+
+adjacent("1A-OKYAC", "1B-OKYAC").
+adjacent("1B-OKYAC", "1C-OKYAC").
+adjacent("1D-OKYAC", "1E-OKYAC").
+adjacent("1E-OKYAC", "1F-OKYAC").
+adjacent("1A-OKYAC", "1B-OKYAC").
+
+% airline(name)
+airline("CSA").
+airline("NAS").
+airline("KLM").
+
+% leg(from, to, serviced_by, operated_by, aircraft)
+leg("CPH", "PRG", "CSA", "CSA", "OK-YAC").
+leg("PRG", "CPH", "NAS", "NAS", "OY-JJO").
+leg("MAD", "PRG", "KLM", "CSA", "OK-YAC").
+leg("PRG", "MAD", "KLM", "KLM", "YR-BMA").
+leg("PRG", "SVO", "KLM", "CSA", "OK-YAC").
+leg("SVO", "PRG", "CSA", "CSA", "OK-YAC").
+leg("MAD", "SVO", "KLM", "KLM", "YR-BMA").
+leg("MAD", "CPH", "KLM", "KLM", "YR-BMA").
+
+% reservation(passenger, from, to, airline, seat, itinerary)
+reservation("VJCPHPRG1", "VJ-010796", "CPH", "PRG", "CSA", "1A-OKYAC", "BC-VJ1").
+reservation("ICMADPRG1", "IC-120587", "MAD", "PRG", "CSA", "1B-OKYAC", "BC-IC1").
+reservation("ICPRGCPH1", "IC-120587", "PRG", "CPH", "NAS", "1A-OYJJO", "BC-IC1").
+reservation("ICCPHPRG1", "IC-120587", "CPH", "PRG", "CSA", "2A-OKYAC", "BC-IC2").
+reservation("ICPRGMAD1", "IC-120587", "PRG", "MAD", "CSA", "1E-OKYAC", "BC-IC2").
+reservation("ICMADSVO1", "IC-120587", "MAD", "SVO", "KLM", "2E-YRBMA", "BC-IC3").
+%reservation("ICCPHPRG2", "IC-120587", "CPH", "PRG", "CSA", "1A-OKYAC", "BC-IC4").
+
+% itinerary()
+itinerary("BC-IC1").
+itinerary("BC-IC2").
+itinerary("BC-IC3").
+itinerary("BC-IC4").
+itinerary("BC-VJ1").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+identifyPassenger(PASSENGER, FIRSTNAME, LASTNAME) :-
+	passenger(PASSENGER, FIRSTNAME, LASTNAME, _).
+
+identifySeat(SEATID, SEAT, CLASS, TYPE, AIRCRAFT) :-
+	seat(SEATID, SEAT, CLASS, TYPE, AIRCRAFT).
+
+% Problem 3. Compute the airports a passenger may fly into.
+canFlyToCountry(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRYFROM, PASSENGER), 
+	visa(COUNTRYFROM, COUNTRY).
+
+canFlyToCountry(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRYFROM, PASSENGER), 
+	visa(COUNTRY, COUNTRYFROM).
+
+canFlyToCountry(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRY, PASSENGER).
+
+% Checks if passenger can fly to airport
+canFlyToAirport(PASSENGER, AIRPORT) :-
+	passenger(PASSENGER, _, _, _),
+	airport(AIRPORT, _, COUNTRY, _),
+	canFlyToCountry(PASSENGER, COUNTRY).
+
+% Problem 4. Compute the passengers that have illegal reservations.
+illegalReservation(PASSENGER) :-
+	passenger(PASSENGER, _, _, _),
+	reservation(_, PASSENGER, _, AIRPORT, _, _, _),
+	not canFlyToAirport(PASSENGER, AIRPORT).
+
+illegalReservation(PASSENGER) :-
+	passenger(PASSENGER, _, _, _),
+	reservation(_, PASSENGER, FROM, TO, OPERATEDBY, _, _),
+	leg(FROM, TO, _, OPERATEDBY, AIRCRAFT),
+	aircraft(AIRCRAFT, _, _, CLASS),
+	airport(FROM, _, _, WEATHERDEP),
+	not operates(CLASS, WEATHERDEP).
+
+illegalReservation(PASSENGER) :-
+	passenger(PASSENGER, _, _, _),
+	reservation(_, PASSENGER, FROM, TO, OPERATEDBY, _, _),
+	leg(FROM, TO, _, OPERATEDBY, AIRCRAFT),
+	aircraft(AIRCRAFT, _, _, CLASS),
+	airport(TO, _, _, WEATHERDEST),
+	not operates(CLASS, WEATHERDEST).
+
+% Problem 5. Compute the booking code of all double bookings.
+doubleBookings(BOOKING) :-
+	reservation(BOOKING, _, FROM, TO, OPERATEDBY, SEAT, _),
+	reservation(BOOKINGDIFF, _, FROM, TO, OPERATEDBY, SEAT, _),
+	BOOKING <> BOOKINGDIFF.
+
+% Problem 6. Compute the aircraft that are permitted to takeoff.
+clearedForTakeoff(FROM, TO, AIRCRAFT) :-
+	leg(FROM, TO, _, OPERATEDBY, AIRCRAFT),
+	reservation(BOOKING, PASSENGER, FROM, TO, OPERATEDBY, _, _),
+	not doubleBookings(BOOKING),
+	not illegalReservation(PASSENGER).
+
+% Problem 7. Compute the airports that are closed.
+closed(AIRPORT) :-
+	airport(AIRPORT, _, _, WEATHER),
+	leg(AIRPORT, _, _, _, AIRCRAFT),
+	aircraft(AIRCRAFT, _, _, CLASS),
+	not operates(CLASS, WEATHER).
+
+closed(AIRPORT) :-
+	airport(AIRPORT, _, _, WEATHER),
+	leg(_, AIRPORT, _, _, AIRCRAFT),
+	aircraft(AIRCRAFT, _, _, CLASS),
+	not operates(CLASS, WEATHER).
+
+% Problem 8. Compute if a passenger can book a flight from one airport to another.
+canBook(PASSENGER, FROM, TO) :-
+	passenger(PASSENGER, _, _, _),
+	airport(FROM, _, _, _),
+	airport(TO, _, _, _),
+	FROM <> TO,
+	leg(THROUGH, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT),
+	canFlyToAirport(PASSENGER, TO),
+	hasFreeSeats(THROUGH, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT),
+	canBook(PASSENGER, FROM, THROUGH).
+
+canBook(PASSENGER, FROM, TO) :-
+	passenger(PASSENGER, _, _, _),
+	airport(FROM, _, _, _),
+	airport(TO, _, _, _),
+	leg(FROM, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT),
+	canFlyToAirport(PASSENGER, TO),
+	hasFreeSeats(FROM, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT).
+
+hasFreeSeats(FROM, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT) :-
+	leg(FROM, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT),
+	seat(SEAT, _, _, _, AIRCRAFT),
+	not existsReservation(FROM, TO, OPERATEDBY, SEAT).
+
+existsReservation(FROM, TO, OPERATEDBY, SEAT) :-
+	reservation(_, _, FROM, TO, OPERATEDBY, SEAT, _).
+
+% Problem 9. Compute the airports a passenger may fly into taking dual citizenship and blacklists into account.
+atleastOnePassportBlacklisted(PASSENGER, COUNTRY) :-
+	passport(BLOCKEDCOUNTRY, PASSENGER),
+	blacklist(COUNTRY, BLOCKEDCOUNTRY).
+
+canFlyToCountryBlacklistVersion(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRY, PASSENGER),
+	not atleastOnePassportBlacklisted(PASSENGER, COUNTRY).
+
+canFlyToCountryBlacklistVersion(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRYFROM, PASSENGER), 
+	visa(COUNTRYFROM, COUNTRY).
+
+canFlyToCountryBlacklistVersion(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRYFROM, PASSENGER), 
+	visa(COUNTRY, COUNTRYFROM).
+
+canFlyToAirportBlacklistVersion(PASSENGER, AIRPORT) :-
+	passenger(PASSENGER, _, _, _),
+	airport(AIRPORT, _, COUNTRY, _),
+	canFlyToCountryBlacklistVersion(PASSENGER, COUNTRY).

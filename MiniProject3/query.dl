@@ -1,0 +1,10 @@
+%canFlyToCountry(_, _)?
+%canFlyToAirport(_, _)?
+%illegalReservation(_)?
+%atleastOnePassportBlacklisted(_, _)?
+%doubleBookings(_)?
+%clearedForTakeoff(_, _, _)?
+%closed(_)?
+%canBook(_, _, _)?
+%canFlyToAirportBlacklistVersion(_, _)?
+identifySeat("1A-OYJJO", _, _, _, _)?

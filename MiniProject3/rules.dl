@@ -1,0 +1,126 @@
+% Problem 3. Compute the airports a passenger may fly into.
+canFlyToCountry(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRYFROM, PASSENGER), 
+	visa(COUNTRYFROM, COUNTRY).
+
+canFlyToCountry(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRYFROM, PASSENGER), 
+	visa(COUNTRY, COUNTRYFROM).
+
+canFlyToCountry(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRY, PASSENGER).
+
+% Checks if passenger can fly to airport
+canFlyToAirport(PASSENGER, AIRPORT) :-
+	passenger(PASSENGER, _, _, _),
+	airport(AIRPORT, _, COUNTRY, _),
+	canFlyToCountry(PASSENGER, COUNTRY).
+
+% Problem 4. Compute the passengers that have illegal reservations.
+illegalReservation(PASSENGER) :-
+	passenger(PASSENGER, _, _, _),
+	reservation(_, PASSENGER, _, AIRPORT, _, _, _),
+	not canFlyToAirport(PASSENGER, AIRPORT).
+
+illegalReservation(PASSENGER) :-
+	passenger(PASSENGER, _, _, _),
+	reservation(_, PASSENGER, FROM, TO, OPERATEDBY, _, _),
+	leg(FROM, TO, _, OPERATEDBY, AIRCRAFT),
+	aircraft(AIRCRAFT, _, _, CLASS),
+	airport(FROM, _, _, WEATHERDEP),
+	not operates(CLASS, WEATHERDEP).
+
+illegalReservation(PASSENGER) :-
+	passenger(PASSENGER, _, _, _),
+	reservation(_, PASSENGER, FROM, TO, OPERATEDBY, _, _),
+	leg(FROM, TO, _, OPERATEDBY, AIRCRAFT),
+	aircraft(AIRCRAFT, _, _, CLASS),
+	airport(TO, _, _, WEATHERDEST),
+	not operates(CLASS, WEATHERDEST).
+
+% Problem 5. Compute the booking code of all double bookings.
+doubleBookings(BOOKING) :-
+	reservation(BOOKING, _, FROM, TO, OPERATEDBY, SEAT, _),
+	reservation(BOOKINGDIFF, _, FROM, TO, OPERATEDBY, SEAT, _),
+	BOOKING <> BOOKINGDIFF.
+
+% Problem 6. Compute the aircraft that are permitted to takeoff.
+clearedForTakeoff(FROM, TO, AIRCRAFT) :-
+	leg(FROM, TO, _, OPERATEDBY, AIRCRAFT),
+	reservation(BOOKING, PASSENGER, FROM, TO, OPERATEDBY, _, _),
+	not doubleBookings(BOOKING),
+	not illegalReservation(PASSENGER).
+
+% Problem 7. Compute the airports that are closed.
+closed(AIRPORT) :-
+	airport(AIRPORT, _, _, WEATHER),
+	leg(AIRPORT, _, _, _, AIRCRAFT),
+	aircraft(AIRCRAFT, _, _, CLASS),
+	not operates(CLASS, WEATHER).
+
+closed(AIRPORT) :-
+	airport(AIRPORT, _, _, WEATHER),
+	leg(_, AIRPORT, _, _, AIRCRAFT),
+	aircraft(AIRCRAFT, _, _, CLASS),
+	not operates(CLASS, WEATHER).
+
+% Problem 8. Compute if a passenger can book a flight from one airport to another.
+canBook(PASSENGER, FROM, TO) :-
+	passenger(PASSENGER, _, _, _),
+	airport(FROM, _, _, _),
+	airport(TO, _, _, _),
+	FROM <> TO,
+	leg(THROUGH, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT),
+	canFlyToAirport(PASSENGER, TO),
+	hasFreeSeats(THROUGH, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT),
+	canBook(PASSENGER, FROM, THROUGH).
+
+canBook(PASSENGER, FROM, TO) :-
+	passenger(PASSENGER, _, _, _),
+	airport(FROM, _, _, _),
+	airport(TO, _, _, _),
+	leg(FROM, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT),
+	canFlyToAirport(PASSENGER, TO),
+	hasFreeSeats(FROM, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT).
+
+hasFreeSeats(FROM, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT) :-
+	leg(FROM, TO, SERVICEDBY, OPERATEDBY, AIRCRAFT),
+	seat(SEAT, _, _, _, AIRCRAFT),
+	not existsReservation(FROM, TO, OPERATEDBY, SEAT).
+
+existsReservation(FROM, TO, OPERATEDBY, SEAT) :-
+	reservation(_, _, FROM, TO, OPERATEDBY, SEAT, _).
+
+% Problem 9. Compute the airports a passenger may fly into taking dual citizenship and blacklists into account.
+atleastOnePassportBlacklisted(PASSENGER, COUNTRY) :-
+	passport(BLOCKEDCOUNTRY, PASSENGER),
+	blacklist(COUNTRY, BLOCKEDCOUNTRY).
+
+canFlyToCountryBlacklistVersion(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRY, PASSENGER),
+	not atleastOnePassportBlacklisted(PASSENGER, COUNTRY).
+
+canFlyToCountryBlacklistVersion(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRYFROM, PASSENGER), 
+	visa(COUNTRYFROM, COUNTRY).
+
+canFlyToCountryBlacklistVersion(PASSENGER, COUNTRY) :-
+	country(COUNTRY),
+	passenger(PASSENGER, _, _, _),
+	passport(COUNTRYFROM, PASSENGER), 
+	visa(COUNTRY, COUNTRYFROM).
+
+canFlyToAirportBlacklistVersion(PASSENGER, AIRPORT) :-
+	passenger(PASSENGER, _, _, _),
+	airport(AIRPORT, _, COUNTRY, _),
+	canFlyToCountryBlacklistVersion(PASSENGER, COUNTRY).
